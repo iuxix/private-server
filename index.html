@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DX MODS 🔥</title>
+    <style>
+        body {
+            margin: 0;
+            background-color: black;
+            font-family: Arial, sans-serif;
+            color: white;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+        .linear2 {
+            background-color: black;
+            padding: 20px;
+            border: 2px solid red;
+            border-radius: 10px;
+            box-shadow: 0 0 15px red;
+            max-width: 500px;
+            text-align: center;
+        }
+        .glowing-text {
+            color: red;
+            text-shadow: 0 0 10px red;
+        }
+        .list-view {
+            margin-top: 20px;
+            text-align: left;
+            padding: 10px;
+            border: 1px solid #444;
+            max-height: 200px;
+            overflow-y: auto;
+            background-color: #222;
+        }
+    </style>
+</head>
+<body>
+    <div class="linear2">
+        <h2 class="glowing-text">DX MODS 🔥</h2>
+        <p id="textview1" class="glowing-text">Period: Loading...</p>
+        <p id="textview2" class="glowing-text">Timer: 00:00</p>
+        <hr style="border: 1px solid red;">
+        <p class="glowing-text">RESULT -: <span id="result">N/A</span></p>
+        <hr style="border: 1px solid red;">
+        <div class="list-view" id="history">
+            <p class="glowing-text">History:</p>
+        </div>
+    </div>
+    <script>
+        let previousPeriod = null;
+        let historyData = [];
+        
+        function updateTimerAndPeriod() {
+            const now = new Date();
+            const seconds = now.getSeconds();
+            const remainingSeconds = 60 - seconds;
+            const hours = now.getHours();
+            const minutes = now.getMinutes();
+
+            const elapsedMinutes = (hours * 60 + minutes) - (5 * 60 + 29);
+            const period = `100001${String(elapsedMinutes < 0 ? 0 : elapsedMinutes).padStart(4, '0')}`;
+            document.getElementById('textview1').innerText = `Period: ${period}`;
+            document.getElementById('textview2').innerText = `Timer: 00:${String(remainingSeconds).padStart(2, '0')}`;
+            
+            if (previousPeriod !== period) {
+                previousPeriod = period;
+                generateResult(period);
+            }
+        }
+        
+        setInterval(updateTimerAndPeriod, 1000);
+        
+        function generateResult(period) {
+            let newResult;
+            
+            if (historyData.length < 6) {
+                newResult = Math.random() > 0.5 ? 'BIG 🔴' : 'SMALL 🟢';
+            } else {
+                let lastResults = historyData.slice(-6);
+                let bigCount = lastResults.filter(r => r.includes('BIG')).length;
+                let smallCount = lastResults.filter(r => r.includes('SMALL')).length;
+                let redCount = lastResults.filter(r => r.includes('🔴')).length;
+                let greenCount = lastResults.filter(r => r.includes('🟢')).length;
+                
+                if (bigCount > smallCount) {
+                    newResult = Math.random() > 0.6 ? 'SMALL 🟢' : 'BIG 🔴';
+                } else {
+                    newResult = Math.random() > 0.6 ? 'BIG 🔴' : 'SMALL 🟢';
+                }
+
+                if (redCount > greenCount) {
+                    newResult = newResult.replace('🟢', '🔴');
+                } else {
+                    newResult = newResult.replace('🔴', '🟢');
+                }
+            }
+
+            document.getElementById('result').innerText = newResult;
+            historyData.push(newResult);
+            
+            const history = document.getElementById('history');
+            const p = document.createElement('p');
+            p.innerHTML = `Period: ${period} → <strong>${newResult}</strong>`;
+            p.style.color = 'red';
+            history.insertBefore(p, history.firstChild);
+            
+            while (history.childNodes.length > 21) {
+                history.removeChild(history.lastChild);
+            }
+        }
+    </script>
+</body>
+</html>
